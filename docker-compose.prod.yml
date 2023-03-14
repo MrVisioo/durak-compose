@@ -18,7 +18,7 @@ services:
       - "traefik.http.routers.frontend.entrypoints=websecure"
   app:
     restart: unless-stopped
-    image: mrvisioo/durak:v0.9.2
+    image: mrvisioo/durak:v0.9.13
     volumes:
       - ./sql_app.db:/sql_app.db
     expose:
