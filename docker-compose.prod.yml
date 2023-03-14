@@ -12,25 +12,25 @@ services:
       - ./web:/public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`play-durak.online`)"
+      - "traefik.http.routers.frontend.rule=Host(`${DURAK_URL}`)"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.routers.frontend.entrypoints=websecure"
   app:
     restart: unless-stopped
-    image: mrvisioo/durak:v0.9.13
+    image: "mrvisioo/durak:${TAG}"
     volumes:
       - ./sql_app.db:/sql_app.db
     expose:
       - 8000
     environment:
       - REDIS_URL=redis://redis:6379/0
-      - CORS_FRONT_URLS=http://play-durak.online,https://play-durak.online
+      - CORS_FRONT_URLS=http://${DURAK_URL},https://${DURAK_URL}
     depends_on:
       - redis
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`api.play-durak.online`)"
+      - "traefik.http.routers.fastapi.rule=Host(`api.${DURAK_URL}`)"
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
       - "traefik.http.routers.fastapi.entrypoints=websecure"
@@ -58,8 +58,8 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.myresolver.acme.email=mrvisioo@gmail.com"
       # DEBUG
-      - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--log.level=DEBUG"
+      # - "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # - "--log.level=DEBUG"
       # /DEBUG
     ports:
       # The HTTP port
@@ -70,7 +70,7 @@ services:
       - "8080:8080"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard.play-durak.online`) && (PathPrefix(`/`))"
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${DURAK_URL}`) && (PathPrefix(`/`))"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
